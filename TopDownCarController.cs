@@ -61,7 +61,7 @@ public class TopDownCarController : MonoBehaviour
             return;
         }
         //applying some resistance/drag when the user isnt accelerating to stop the car slowly
-        if (accelerationInput == 0){
+        if (accelerationInput <= 0.2 && accelerationInput >= -0.2){
             rb.drag = Mathf.Lerp(rb.drag, 3.0f, Time.fixedDeltaTime * 3);
         } else {
             rb.drag = 0;
