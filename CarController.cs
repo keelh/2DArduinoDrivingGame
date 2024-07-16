@@ -4,6 +4,8 @@ public class CarController : MonoBehaviour
 {
     public float speed = 10f;
     public float turnSpeed = 50f;
+    float rotation = 0;
+
 
     private Rigidbody2D rb;
 
@@ -11,8 +13,7 @@ public class CarController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
     }
-
-    void Update()
+    void FixedUpdate()
     {
         // Get input from keyboard
         float moveInput = Input.GetAxis("Vertical");
@@ -24,8 +25,9 @@ public class CarController : MonoBehaviour
         // Apply rotation
         if (moveInput != 0 || turnInput != 0)
         {
-            float rotation = -turnInput * turnSpeed * Time.deltaTime * Mathf.Sign(moveInput);
+            rotation = -turnInput * turnSpeed * Time.deltaTime * Mathf.Sign(moveInput);
             rb.MoveRotation(rb.rotation + rotation);
         }
     }
+ 
 }
