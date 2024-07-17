@@ -12,30 +12,31 @@ public class TopDownCarController : MonoBehaviour
     float steeringInput = 0;
     float velocityVsUp = 0;
 
-
-
     Rigidbody2D rb;
+    bool isRaceCompleted = false; // Add this line
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
-    
-    
+
     void FixedUpdate()
     {
+        if (isRaceCompleted)
+        {
+            rb.velocity = Vector2.zero; // Stop the car
+            rb.angularVelocity = 0; // Stop any rotation
+            return; // Skip further processing
+        }
+
         ApplyEngineForce();
-
         KillOrthogonalVelocity();
-
         ApplySteering();
     }
 
-    void KillOrthogonalVelocity(){
-        // gives a values for how much forward velocity a car has
+    void KillOrthogonalVelocity()
+    {
         Vector2 forwardVelocity = transform.up * Vector2.Dot(rb.velocity, transform.up);
-
-        // gives a values for how much right velocity a car has
         Vector2 rightVelocity = transform.right * Vector2.Dot(rb.velocity, transform.right);
 
         rb.velocity = forwardVelocity + rightVelocity * driftFactor;
@@ -43,27 +44,29 @@ public class TopDownCarController : MonoBehaviour
 
     void ApplyEngineForce()
     {
-        //calcing how "foreward" we are going in terms of our velocity
         velocityVsUp = Vector2.Dot(transform.up, rb.velocity);
 
-        //limits that caps speed
-        if (velocityVsUp > maxSpeed && accelerationInput > 0){
-            return; //doesnt applt any more force and exits the function
-        }
-
-        //caps revesing speed to 50% of max speed
-        if (velocityVsUp < -maxSpeed * 0.5f && accelerationInput < 0){
+        if (velocityVsUp > maxSpeed && accelerationInput > 0)
+        {
             return;
         }
 
-        //another case in case we are being pushed/sliding
-        if (rb.velocity.sqrMagnitude > maxSpeed * maxSpeed && accelerationInput > 0){
+        if (velocityVsUp < -maxSpeed * 0.5f && accelerationInput < 0)
+        {
             return;
         }
-        //applying some resistance/drag when the user isnt accelerating to stop the car slowly
-        if (accelerationInput <= 0.2 && accelerationInput >= -0.2){
+
+        if (rb.velocity.sqrMagnitude > maxSpeed * maxSpeed && accelerationInput > 0)
+        {
+            return;
+        }
+
+        if (accelerationInput <= 0.5 && accelerationInput >= -0.5)
+        {
             rb.drag = Mathf.Lerp(rb.drag, 3.0f, Time.fixedDeltaTime * 3);
-        } else {
+        }
+        else
+        {
             rb.drag = 0;
         }
 
@@ -71,14 +74,20 @@ public class TopDownCarController : MonoBehaviour
         rb.AddForce(engineForceVector, ForceMode2D.Force);
     }
 
-     void ApplySteering(){
+    void ApplySteering()
+    {
         rotationAngle -= steeringInput * turnFactor;
         rb.MoveRotation(rotationAngle);
     }
-    
-    public void SetInputVector(Vector2 inputVector){
+
+    public void SetInputVector(Vector2 inputVector)
+    {
         steeringInput = inputVector.x;
         accelerationInput = inputVector.y;
     }
-}
 
+    public void FinishRace() // Add this method
+    {
+        isRaceCompleted = true;
+    }
+}
