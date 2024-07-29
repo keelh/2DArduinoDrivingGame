@@ -1,27 +1,25 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class PositionHandler : MonoBehaviour
 {
-    public List<CarLapCounter> carLapCounters = new List<CarLapCounter>();
-
+    public List<ArduinoInputHandler> carLapCounters = new List<ArduinoInputHandler>();   
     void Start()
     {
         // Get all car lap counters in the scene
-        CarLapCounter[] carLapCounterArray = FindObjectsOfType<CarLapCounter>();
+        ArduinoInputHandler[] carLapCounterArray = FindObjectsOfType<ArduinoInputHandler>();
 
         // Store the lap counters in a list
-        carLapCounters = carLapCounterArray.ToList<CarLapCounter>();
+        carLapCounters = carLapCounterArray.ToList<ArduinoInputHandler>();
 
         // Hook up the passed checkpoint event
-        foreach (CarLapCounter lapCounter in carLapCounters)
+        foreach (ArduinoInputHandler lapCounter in carLapCounters)
             lapCounter.OnPassCheckpoint += OnPassCheckpoint;
         
     }
 
-    void OnPassCheckpoint(CarLapCounter carLapCounter)
+    void OnPassCheckpoint(ArduinoInputHandler carLapCounter)
     {
         Debug.Log("Event: Car passed a checkpoint");
     }

@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System.IO.Ports;
 
@@ -8,8 +6,6 @@ using System.IO.Ports;
 public class ArduinoCarLapCounter : MonoBehaviour
 {
     private int passedCheckPointNumber = 0;
-    private float timeAtLastPassedCheckpoint = 0;
-    private int numOfPassedCheckpoints = 0;
     int lapsCompleted = 0;
     public int lapsToComplete = 1;
     bool isRaceCompleted = false;
@@ -19,20 +15,20 @@ public class ArduinoCarLapCounter : MonoBehaviour
     // Declare and initialize the serial port
     private SerialPort serialPort;
 
-    void Start()
-    {
-        // Initialize the serial port
-        serialPort = new SerialPort("COM6", 9600); // Use the correct port and baud rate
-        try
-        {
-            serialPort.Open();
-            Debug.Log("Serial port opened");
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("Failed to open serial port: " + e.Message);
-        }
-    }
+    // void Start()
+    // {
+    //     // Initialize the serial port
+    //     serialPort = new SerialPort("COM6", 9600); // Use the correct port and baud rate
+    //     try
+    //     {
+    //         serialPort.Open();
+    //         Debug.Log("Serial port opened");
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         Debug.LogError("Failed to open serial port: " + e.Message);
+    //     }
+    // }
 
     void OnTriggerEnter2D(Collider2D collider2D)
     {
@@ -48,8 +44,6 @@ public class ArduinoCarLapCounter : MonoBehaviour
             if (passedCheckPointNumber + 1 == checkPoint.checkPointNumber)
             {
                 passedCheckPointNumber = checkPoint.checkPointNumber;
-                numOfPassedCheckpoints++;
-                timeAtLastPassedCheckpoint = Time.time;
 
                 if (checkPoint.isFinishLine)
                 {
@@ -68,7 +62,7 @@ public class ArduinoCarLapCounter : MonoBehaviour
                     }
 
                     // Send a signal to the Arduino
-                    SendSignalToArduino();
+                    //SendSignalToArduino();
                 }
 
                 OnPassCheckpoint?.Invoke(this);
@@ -76,25 +70,25 @@ public class ArduinoCarLapCounter : MonoBehaviour
         }
     }
 
-    void SendSignalToArduino()
-    {
-        if (serialPort != null && serialPort.IsOpen)
-        {
-            try
-            {
-                serialPort.WriteLine("LapCompleted");
-                Debug.Log("Signal sent to Arduino");
-            }
-            catch (Exception e)
-            {
-                Debug.LogError("Failed to send signal to Arduino: " + e.Message);
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Serial port is not open");
-        }
-    }
+    // void SendSignalToArduino()
+    // {
+    //     if (serialPort != null && serialPort.IsOpen)
+    //     {
+    //         try
+    //         {
+    //             serialPort.WriteLine("L");
+    //             Debug.Log("Signal sent to Arduino");
+    //         }
+    //         catch (Exception e)
+    //         {
+    //             Debug.LogError("Failed to send signal to Arduino: " + e.Message);
+    //         }
+    //     }
+    //     else
+    //     {
+    //         Debug.LogWarning("Serial port is not open");
+    //     }
+    // }
 
     void OnDestroy()
     {
