@@ -56,6 +56,8 @@ int duration = 500;
 
 bool gameStarted = false;
 
+int currentDisplayValue = 0;  // Global variable to store the current display value
+
 #define GREEN_LED 9
 #define RED_LED 12
 
@@ -235,22 +237,23 @@ void loop() {
   }
 
   if (timerRunning) {
-    // Calculate elapsed time
-    unsigned long currentMillis = millis();
-    unsigned long elapsedMillis = currentMillis - timerStart;
+  // Calculate elapsed time
+  unsigned long currentMillis = millis();
+  unsigned long elapsedMillis = currentMillis - timerStart;
 
-    // Convert elapsedMillis to minutes and seconds
-    int minutes = (elapsedMillis / 60000) % 60;  // Minutes
-    int seconds = (elapsedMillis / 1000) % 60;   // Seconds
+  // Convert elapsedMillis to minutes and seconds
+  int minutes = (elapsedMillis / 60000) % 60;  // Minutes
+  int seconds = (elapsedMillis / 1000) % 60;   // Seconds
 
-    // Combine minutes and seconds for display
-    int displayTime = minutes * 100 + seconds;
+  // Combine minutes and seconds for display
+  int displayTime = minutes * 100 + seconds;
 
-    // Display the time on the TM1637
-    display.showNumberDecEx(displayTime, 0b01000000, true, 4, 0);
+  // Store the current display value
+  currentDisplayValue = displayTime;
 
-    // Small delay to prevent rapid updates
-  }
+  // Display the time on the TM1637
+  display.showNumberDecEx(displayTime, 0b01000000, true, 4, 0);
+}
 
   int xPosition = analogRead(VRx);
   int yPosition = analogRead(VRy);
@@ -289,41 +292,47 @@ void processCommand() {
   m.clear();
   delay(1000);
 
-  m.clear();
-  m.shiftLeft(false, true);
-  tone(BUZZER, 1000);
+ m.shiftLeft(false, true);
+  tone(BUZZER, melody[0], duration);
   digitalWrite(RED_LED, HIGH);
+  delay(500);
+  noTone(BUZZER);
   printStringWithShift(string4, 50);
   m.clear();
-  noTone(BUZZER);
   digitalWrite(RED_LED, LOW);
-  delay(500);
+  delay(200);
 
   m.shiftLeft(false, true);
-  tone(BUZZER, 1000);
+  tone(BUZZER, melody[0], duration);
   digitalWrite(RED_LED, HIGH);
+  delay(500);
+  noTone(BUZZER);
   printStringWithShift(string5, 50);
   m.clear();
-  noTone(BUZZER);
   digitalWrite(RED_LED, LOW);
-  delay(500);
+  delay(200);
 
+  
   m.shiftLeft(false, true);
-  tone(BUZZER, 1000);
+  tone(BUZZER, melody[0], duration);
   digitalWrite(RED_LED, HIGH);
+  delay(500);
+  noTone(BUZZER);
   printStringWithShift(string6, 50);
   m.clear();
-  noTone(BUZZER);
   digitalWrite(RED_LED, LOW);
-  delay(500);
+  delay(200);
 
+  
   m.shiftLeft(false, true);
-  tone(BUZZER, 1500);
+  tone(BUZZER, melody[7], duration);
   digitalWrite(GREEN_LED, HIGH);
-  Serial.println("Displaying GO message");
-  printStringWithShift(string2, 70);
+  delay(500);
   noTone(BUZZER);
+  printStringWithShift(string2, 50);
   m.clear();
+  digitalWrite(GREEN_LED, LOW);
+  delay(200);
 
   Serial.println("Timer started");
   timerStart = millis();
@@ -337,9 +346,8 @@ void processCommand() {
 
 void funcLapCompleted() {
   lapCount++;
-  flashGreenLED(); 
-  if (lapCount > 3) {
-    lapCount = 0;
+  flashGreenLED();
+  if (lapCount == 2) {
     stopGame();
   }
 
@@ -409,6 +417,7 @@ void stopGame() {
   digitalWrite(RED_LED, LOW);
   noTone(BUZZER);
   Serial.println("Game stopped");
-  m.clear();
-  display.clear();  // Clear the TM1637 display
+
+  // Ensure the TM1637 display continues showing the last value
+  display.showNumberDecEx(currentDisplayValue, 0b01000000, true, 4, 0);
 }

@@ -76,8 +76,12 @@ public class TopDownCarController : MonoBehaviour
 
     void ApplySteering()
     {
-        rotationAngle -= steeringInput * turnFactor;
-        rb.MoveRotation(rotationAngle);
+        if (steeringInput < 0.3 && steeringInput > -0.3){
+            return;
+        } else {
+            rotationAngle -= steeringInput * turnFactor;
+            rb.MoveRotation(rotationAngle);
+        }
     }
 
     public void SetInputVector(Vector2 inputVector)
