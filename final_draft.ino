@@ -221,8 +221,8 @@ void loop() {
     char command = Serial.read();
     while (started == false) {
       if (command == 'S') {
+        started = true;
         processCommand();
-        started == true;
       }
     }
 
@@ -250,7 +250,6 @@ void loop() {
     display.showNumberDecEx(displayTime, 0b01000000, true, 4, 0);
 
     // Small delay to prevent rapid updates
-    delay(10);
   }
 
   int xPosition = analogRead(VRx);
@@ -265,16 +264,12 @@ void loop() {
   Serial.print(yValue);
   Serial.println();
 
-  delay(10);
-
   unsigned long currentMillis = millis();
   if (currentMillis - lastUpdateTime >= DISPLAY_INTERVAL) {
     lastUpdateTime = currentMillis;
     if (lapCompleted) {
       lapCompleted = false;
       m.clear();
-      printStringWithShift(string3, 70);
-      flashGreenLED();
       sevenSegWrite(lapCount);
       noTone(BUZZER);
       m.clear();
@@ -342,7 +337,7 @@ void processCommand() {
 
 void funcLapCompleted() {
   lapCount++;
-  tone(BUZZER, 1000);
+  flashGreenLED(); 
   if (lapCount > 3) {
     lapCount = 0;
     stopGame();
