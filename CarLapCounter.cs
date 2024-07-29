@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO.Ports;
 
 
 public class CarLapCounter : MonoBehaviour
@@ -14,6 +15,8 @@ public class CarLapCounter : MonoBehaviour
     bool isRaceCompleted = false;
 
     public event Action<CarLapCounter> OnPassCheckpoint;
+
+    private SerialPort serialPort;
 
     void OnTriggerEnter2D(Collider2D collider2D)
     {
@@ -53,4 +56,14 @@ public class CarLapCounter : MonoBehaviour
             }
         }
     }
+
+    void OnDestroy()
+    {
+        // Ensure the serial port is closed when the object is destroyed
+        if (serialPort != null && serialPort.IsOpen)
+        {
+            serialPort.Close();
+        }
+    }
 }
+
