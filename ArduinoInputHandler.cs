@@ -107,45 +107,45 @@ public class ArduinoInputHandler : MonoBehaviour
     }
 
     void Update()
+{
+    if (serialPort.IsOpen)
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        try
         {
-            StartGame();
-        }
+            string data = serialPort.ReadLine();
+            string[] values = data.Split(',');
 
-        if (serialPort.IsOpen && gameStarted)
-        {
-            try
+            if (values.Length == 2)
             {
-                string data = serialPort.ReadLine();
-                string[] values = data.Split(',');
-
-                if (values.Length == 2)
+                if (float.TryParse(values[0], out float xInput) && float.TryParse(values[1], out float yInput))
                 {
-                    if (float.TryParse(values[0], out float xInput) && float.TryParse(values[1], out float yInput))
+                    Vector2 inputVector = new Vector2(xInput, yInput);
+                    if (carController != null)
                     {
-                        Vector2 inputVector = new Vector2(xInput, yInput);
-                        if (carController != null)
-                        {
-                            carController.SetInputVector(inputVector);
-                        }
-                    }
-                    else
-                    {
-                        Debug.LogWarning("Invalid input data: " + data);
+                        carController.SetInputVector(inputVector);
                     }
                 }
+                else
+                {
+                    Debug.LogWarning("Invalid input data: " + data);
+                }
             }
-            catch (TimeoutException)
+            else if (data == "J") // Assuming "J" is the signal for joystick press
             {
-                // Handle timeouts or empty reads
-            }
-            catch (Exception e)
-            {
-                Debug.LogError("Error reading from serial port: " + e.Message);
+                StartGame();
             }
         }
+        catch (TimeoutException)
+        {
+            // Handle timeouts or empty reads
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Error reading from serial port: " + e.Message);
+        }
     }
+}
+
 
     void OnApplicationQuit()
     {

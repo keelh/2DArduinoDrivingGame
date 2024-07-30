@@ -236,24 +236,29 @@ void loop() {
     }
   }
 
+  int joystickButtonState = digitalRead(7);
+  if (joystickButtonState == LOW) {  // Assuming LOW means pressed
+    Serial.println("J");
+  }
+
   if (timerRunning) {
-  // Calculate elapsed time
-  unsigned long currentMillis = millis();
-  unsigned long elapsedMillis = currentMillis - timerStart;
+    // Calculate elapsed time
+    unsigned long currentMillis = millis();
+    unsigned long elapsedMillis = currentMillis - timerStart;
 
-  // Convert elapsedMillis to minutes and seconds
-  int minutes = (elapsedMillis / 60000) % 60;  // Minutes
-  int seconds = (elapsedMillis / 1000) % 60;   // Seconds
+    // Convert elapsedMillis to minutes and seconds
+    int minutes = (elapsedMillis / 60000) % 60;  // Minutes
+    int seconds = (elapsedMillis / 1000) % 60;   // Seconds
 
-  // Combine minutes and seconds for display
-  int displayTime = minutes * 100 + seconds;
+    // Combine minutes and seconds for display
+    int displayTime = minutes * 100 + seconds;
 
-  // Store the current display value
-  currentDisplayValue = displayTime;
+    // Store the current display value
+    currentDisplayValue = displayTime;
 
-  // Display the time on the TM1637
-  display.showNumberDecEx(displayTime, 0b01000000, true, 4, 0);
-}
+    // Display the time on the TM1637
+    display.showNumberDecEx(displayTime, 0b01000000, true, 4, 0);
+  }
 
   int xPosition = analogRead(VRx);
   int yPosition = analogRead(VRy);
@@ -292,7 +297,7 @@ void processCommand() {
   m.clear();
   delay(1000);
 
- m.shiftLeft(false, true);
+  m.shiftLeft(false, true);
   tone(BUZZER, melody[0], duration);
   digitalWrite(RED_LED, HIGH);
   delay(500);
@@ -312,7 +317,7 @@ void processCommand() {
   digitalWrite(RED_LED, LOW);
   delay(200);
 
-  
+
   m.shiftLeft(false, true);
   tone(BUZZER, melody[0], duration);
   digitalWrite(RED_LED, HIGH);
@@ -323,7 +328,7 @@ void processCommand() {
   digitalWrite(RED_LED, LOW);
   delay(200);
 
-  
+
   m.shiftLeft(false, true);
   tone(BUZZER, melody[7], duration);
   digitalWrite(GREEN_LED, HIGH);
