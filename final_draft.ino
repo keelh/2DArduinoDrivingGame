@@ -37,6 +37,7 @@ char string3[] = "Lap Complete!";
 char string4[] = "3... ";
 char string5[] = "2... ";
 char string6[] = "1... ";
+char string7[] = "Game Over!   ";
 
 // Define buzzer pin
 #define BUZZER 8
@@ -44,7 +45,7 @@ char string6[] = "1... ";
 unsigned long timerStart = 0;
 unsigned long lapStartTime = 0;
 bool lapCompleted = false;
-int lapCount = 1;
+int lapCount = 0;
 bool timerRunning = false;
 bool gameRunning = false;
 bool started = false;
@@ -278,7 +279,7 @@ void loop() {
     if (lapCompleted) {
       lapCompleted = false;
       m.clear();
-      sevenSegWrite(lapCount);
+      sevenSegWrite(lapCount + 1);
       noTone(BUZZER);
       m.clear();
     }
@@ -335,6 +336,8 @@ void processCommand() {
   delay(500);
   noTone(BUZZER);
   printStringWithShift(string2, 50);
+  sevenSegWrite(lapCount + 1);
+
   m.clear();
   digitalWrite(GREEN_LED, LOW);
   delay(200);
@@ -421,7 +424,9 @@ void stopGame() {
   digitalWrite(GREEN_LED, LOW);
   digitalWrite(RED_LED, LOW);
   noTone(BUZZER);
+  printStringWithShift(string7, 70);
   Serial.println("Game stopped");
+
 
   // Ensure the TM1637 display continues showing the last value
   display.showNumberDecEx(currentDisplayValue, 0b01000000, true, 4, 0);
